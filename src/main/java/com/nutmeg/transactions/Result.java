@@ -1,13 +1,19 @@
 package com.nutmeg.transactions;
 
-import java.math.BigDecimal;
-
 public class Result {
-  private BigDecimal cash;
-  private BigDecimal stock;
+  private double cash;
+  private double stock;
 
-  public Result(BigDecimal cash, BigDecimal stock) {
+  public Result(double cash, double stock) {
     this.cash = cash;
     this.stock = stock;
+  }
+
+  public double getCash() {
+    return cash;
+  }
+
+  public double getStock() {
+    return stock;
   }
 }

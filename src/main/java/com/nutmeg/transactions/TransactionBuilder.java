@@ -1,8 +1,6 @@
 package com.nutmeg.transactions;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 import static java.time.format.DateTimeFormatter.BASIC_ISO_DATE;
 
@@ -10,8 +8,8 @@ public class TransactionBuilder {
   private String accountNumber;
   private LocalDate date;
   private TransactionType transactionType;
-  private BigDecimal unit;
-  private BigDecimal price;
+  private double unit;
+  private double price;
   private String asset;
 
   public TransactionBuilder (String accountNumber, String date){
@@ -25,7 +23,7 @@ public class TransactionBuilder {
   }
 
   public TransactionBuilder hasUnit(String unit) {
-    this.unit = new BigDecimal (unit);
+    this.unit = Double.valueOf (unit);
     return this;
   }
 
@@ -35,7 +33,7 @@ public class TransactionBuilder {
   }
 
   public TransactionBuilder hasPrice(String price) {
-    this.price = new BigDecimal(price);
+    this.price = Double.valueOf(price);
     return this;
   }
 

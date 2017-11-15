@@ -1,15 +1,14 @@
 package com.nutmeg.transactions;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class Transaction {
   private String accountNumber;
   private LocalDate date;
   private TransactionType type;
-  private BigDecimal unit;
+  private double unit;
   private String asset;
-  private BigDecimal price;
+  private double price;
 
   public Transaction(String accountNumber, LocalDate date){
     this.accountNumber = accountNumber;
@@ -40,11 +39,11 @@ public class Transaction {
     this.type = type;
   }
 
-  public BigDecimal getUnit() {
+  public double getUnit() {
     return unit;
   }
 
-  public void setUnit(BigDecimal unit) {
+  public void setUnit(double unit) {
     this.unit = unit;
   }
 
@@ -56,11 +55,11 @@ public class Transaction {
     this.asset = asset;
   }
 
-  public BigDecimal getPrice() {
+  public double getPrice() {
     return price;
   }
 
-  public void setPrice(BigDecimal price) {
+  public void setPrice(double price) {
     this.price = price;
   }
 
@@ -83,23 +82,26 @@ public class Transaction {
 
     Transaction that = (Transaction) o;
 
-    if (!accountNumber.equals(that.accountNumber)) return false;
-    if (!date.equals(that.date)) return false;
+    if (Double.compare(that.unit, unit) != 0) return false;
+    if (Double.compare(that.price, price) != 0) return false;
+    if (accountNumber != null ? !accountNumber.equals(that.accountNumber) : that.accountNumber != null) return false;
+    if (date != null ? !date.equals(that.date) : that.date != null) return false;
     if (type != that.type) return false;
-    if (!unit.equals(that.unit)) return false;
-    if (!asset.equals(that.asset)) return false;
-    return price.equals(that.price);
+    return asset != null ? asset.equals(that.asset) : that.asset == null;
   }
 
   @Override
   public int hashCode() {
-    int result = accountNumber.hashCode();
-    result = 31 * result + date.hashCode();
-    result = 31 * result + type.hashCode();
-    result = 31 * result + unit.hashCode();
-    result = 31 * result + asset.hashCode();
-    result = 31 * result + price.hashCode();
+    int result;
+    long temp;
+    result = accountNumber != null ? accountNumber.hashCode() : 0;
+    result = 31 * result + (date != null ? date.hashCode() : 0);
+    result = 31 * result + (type != null ? type.hashCode() : 0);
+    temp = Double.doubleToLongBits(unit);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    result = 31 * result + (asset != null ? asset.hashCode() : 0);
+    temp = Double.doubleToLongBits(price);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
     return result;
   }
-
 }
