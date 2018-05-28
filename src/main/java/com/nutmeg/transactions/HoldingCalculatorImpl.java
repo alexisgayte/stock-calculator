@@ -2,62 +2,47 @@ package com.nutmeg.transactions;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
 
-import static com.nutmeg.transactions.FileUtils.transactionFromFile;
-import static java.util.stream.Collectors.groupingBy;
+public class HoldingCalculatorImpl implements HoldingCalculator {
 
-public class HoldingCalculatorImpl implements HoldingCalculator{
+	private TransactionConvertor transactionConvertor = new TransactionConvertor();
 
-  @Override
-  public Map<String, List<Holding>> calculateHoldings(File transactionFile, LocalDate date) {
+	@Override
+	public Map<String, List<Holding>> calculateHoldings(File transactionFile, LocalDate date){
 
-    try {
-      Map<String, List<Transaction>> transactions = transactionFromFile(transactionFile, date);
+		
+		Map<String, List<Holding>> result = new LinkedHashMap<>();
+		ResultBuilder resultBuilder = new ResultBuilder();
+		
+		try {
+			Files.lines(Paths.get((transactionFile.getAbsolutePath())))
+					.map(transactionConvertor)
+					.filter(t -> !date.isBefore(t.getDate()))
+					.forEachOrdered(a -> {
+						if (!resultBuilder.isBuilderFor(a.getAccount())) {
+							build(result, resultBuilder);
+						}
+						resultBuilder.addTransaction(a);
+					});
+			build(result, resultBuilder);
+			
+		} catch (IOException e) {
+			throw new RuntimeException();
+		}
+		
+		return result;
+	}
 
-      return transactions
-          .entrySet()
-          .stream()
-          .flatMap(b -> b.getValue().stream())
-          .collect(
-            groupingBy(
-                Transaction::getAsset,
-                Collector.of(
-                    ArrayList::new, // Supplier
-
-                    (list, transaction) ->  { // Accumulator
-                      Holding currentHolding = Holding.of(transaction);
-                      if (list.contains(currentHolding)) {
-                        Holding oldHolding = list.get(list.indexOf(currentHolding));
-                        oldHolding.computeHolding(transaction);
-
-                        Holding cashHolding = Holding.CASH(transaction);
-                        if (cashHolding != null){
-                          cashHolding.computeCash(transaction);
-                        }
-
-                      } else {
-                        list.add(currentHolding);
-                      }
-                    },
-
-                    (list, holdingList) ->  { // Combiner
-                      list.addAll(holdingList);
-                      return  holdingList;
-                    }
-                )
-          )
-      );
-
-    } catch (IOException e) {
-      throw new RuntimeException(e.getMessage());
-    }
-
-  }
-
+	private void build(Map<String, List<Holding>> result, ResultBuilder resultBuilder) {
+		Result build = resultBuilder.build();
+		resultBuilder.reset();
+		result.put(build.getAccount(), build.getHolding());
+	}
 
 }

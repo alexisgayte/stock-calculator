@@ -1,19 +1,25 @@
 package com.nutmeg.transactions;
 
+import java.util.List;
+
+
 public class Result {
-  private double cash;
-  private double stock;
+	
+	private String account;
+	private List<Holding> holding;
+	
+	public String getAccount() {
+		return account;
+	}
 
-  public Result(double cash, double stock) {
-    this.cash = cash;
-    this.stock = stock;
-  }
+	public List<Holding> getHolding() {
+		return holding;
+	}
 
-  public double getCash() {
-    return cash;
-  }
+	public Result(String account, List<Holding> holding) {
+		super();
+		this.account = account;
+		this.holding = holding;
+	}
 
-  public double getStock() {
-    return stock;
-  }
 }
