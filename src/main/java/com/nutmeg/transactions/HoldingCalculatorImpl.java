@@ -14,12 +14,11 @@ public class HoldingCalculatorImpl implements HoldingCalculator {
 	private TransactionConvertor transactionConvertor = new TransactionConvertor();
 
 	@Override
-	public Map<String, List<Holding>> calculateHoldings(File transactionFile, LocalDate date){
+	public Map<String, List<Holding>> calculateHoldings(File transactionFile, LocalDate date) {
 
-		
 		Map<String, List<Holding>> result = new LinkedHashMap<>();
 		ResultBuilder resultBuilder = new ResultBuilder();
-		
+
 		try {
 			Files.lines(Paths.get((transactionFile.getAbsolutePath())))
 					.map(transactionConvertor)
@@ -31,11 +30,11 @@ public class HoldingCalculatorImpl implements HoldingCalculator {
 						resultBuilder.addTransaction(a);
 					});
 			build(result, resultBuilder);
-			
+
 		} catch (IOException e) {
 			throw new RuntimeException();
 		}
-		
+
 		return result;
 	}
 

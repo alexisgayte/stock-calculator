@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class ResultBuilder {
+	private static String CASH_KEY = "CASH";
 
 	private String account;
 	private Map<String, Double> holding;
@@ -27,21 +28,21 @@ public class ResultBuilder {
 		switch (transaction.getTxnType()) {
 		case BOT:
 			// Buy
-			holding.merge("CASH", transaction.getPrice() * transaction.getUnits(), (x, y) -> x - y);
+			holding.merge(CASH_KEY, transaction.getPrice() * transaction.getUnits(), (x, y) -> x - y);
 			holding.merge(transaction.getAsset(), transaction.getUnits(), (x, y) -> x + y);
 			break;
 		case DIV:
 		case DEP:
-			// Buy
-			holding.merge("CASH", transaction.getPrice() * transaction.getUnits(), (x, y) -> x + y);
+			// Deposit/Div
+			holding.merge(CASH_KEY, transaction.getPrice() * transaction.getUnits(), (x, y) -> x + y);
 			break;
 		case WDR:
 			// Withdrawal
-			holding.merge("CASH", transaction.getPrice() * transaction.getUnits(), (x, y) -> x - y);
+			holding.merge(CASH_KEY, transaction.getPrice() * transaction.getUnits(), (x, y) -> x - y);
 			break;
 		case SLD:
 			// Sold
-			holding.merge("CASH", transaction.getPrice() * transaction.getUnits(), (x, y) -> x + y);
+			holding.merge(CASH_KEY, transaction.getPrice() * transaction.getUnits(), (x, y) -> x + y);
 			holding.merge(transaction.getAsset(), transaction.getUnits(), (x, y) -> x - y);
 			break;
 		default:
@@ -61,6 +62,5 @@ public class ResultBuilder {
 		account = null;
 		holding = new ConcurrentHashMap<>();
 		holding.put("CASH", 0d);
-
 	}
 }
